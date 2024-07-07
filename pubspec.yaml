@@ -1,0 +1,29 @@
+name: mad3_finals_tuba
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  form_field_validator: ^1.1.0
+  get_it: ^7.7.0
+  go_router: ^14.2.0
+  google_fonts: ^6.2.1
+  google_maps_flutter: ^2.7.0
+  salomon_bottom_bar: ^3.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/
+
