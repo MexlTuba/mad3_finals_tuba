@@ -8,17 +8,17 @@ import 'package:mad3_finals_tuba/utils/enum.dart';
 import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
 import 'package:mad3_finals_tuba/views/screens/login.dart';
 import 'package:mad3_finals_tuba/views/screens/onboarding.dart';
+import 'package:mad3_finals_tuba/views/screens/profile_drawer.dart';
 import 'package:mad3_finals_tuba/views/screens/register.dart';
+import 'package:mad3_finals_tuba/views/screens/map_screen.dart';
+import 'package:mad3_finals_tuba/views/widgets/bottom_nav_bar.dart';
 
 class GlobalRouter {
-  // Static method to initialize the singleton in GetIt
   static void initialize() {
     GetIt.instance.registerSingleton<GlobalRouter>(GlobalRouter());
   }
 
-  // Static getter to access the instance through GetIt
   static GlobalRouter get instance => GetIt.instance<GlobalRouter>();
-
   static GlobalRouter get I => GetIt.instance<GlobalRouter>();
 
   late GoRouter router;
@@ -47,64 +47,54 @@ class GlobalRouter {
   GlobalRouter() {
     _rootNavigatorKey = GlobalKey<NavigatorState>();
     _shellNavigatorKey = GlobalKey<NavigatorState>();
-    router = GoRouter(
-        navigatorKey: _rootNavigatorKey,
-        initialLocation: Onboarding.route,
-        redirect: handleRedirect,
-        refreshListenable: AuthController.I,
-        routes: [
-          GoRoute(
-              parentNavigatorKey: _rootNavigatorKey,
-              path: Onboarding.route,
-              name: Onboarding.name,
-              builder: (context, _) {
-                return Onboarding();
-              }),
-          GoRoute(
-              parentNavigatorKey: _rootNavigatorKey,
-              path: Register.route,
-              name: Register.name,
-              builder: (context, _) {
-                return Register();
-              }),
 
-          GoRoute(
-              parentNavigatorKey: _rootNavigatorKey,
-              path: Login.route,
-              name: Login.name,
-              builder: (context, _) {
-                return Login();
-              }),
-          GoRoute(
-              parentNavigatorKey: _rootNavigatorKey,
+    router = GoRouter(
+      navigatorKey: _rootNavigatorKey,
+      initialLocation: Onboarding.route,
+      redirect: handleRedirect,
+      refreshListenable: AuthController.I,
+      routes: [
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: Onboarding.route,
+          name: Onboarding.name,
+          builder: (context, _) => Onboarding(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: Register.route,
+          name: Register.name,
+          builder: (context, _) => Register(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: Login.route,
+          name: Login.name,
+          builder: (context, _) => Login(),
+        ),
+        ShellRoute(
+          navigatorKey: _shellNavigatorKey,
+          builder: (context, state, child) {
+            return Scaffold(
+              body: child,
+              bottomNavigationBar: BottomBar(),
+              endDrawer: ProfileDrawer(), // Add the right-side drawer
+            );
+          },
+          routes: [
+            GoRoute(
               path: Home.route,
               name: Home.name,
-              builder: (context, _) {
-                return Home();
-              }),
-          // ShellRoute(
-          //     navigatorKey: _shellNavigatorKey,
-          //     routes: [
-          //       GoRoute(
-          //           parentNavigatorKey: _shellNavigatorKey,
-          //           path: HomeScreen.route,
-          //           name: HomeScreen.name,
-          //           builder: (context, _) {
-          //             return const HomeScreen();
-          //           }),
-          //       GoRoute(
-          //           parentNavigatorKey: _shellNavigatorKey,
-          //           path: "/index",
-          //           name: "Wrapped Index",
-          //           builder: (context, _) {
-          //             return const IndexScreen();
-          //           }),
-          //     ],
-          //     builder: (context, state, child) {
-          //       return HomeWrapper(
-          //         child: child,
-          //       );
-          //     }),
-        ]);
+              builder: (context, state) => Home(),
+            ),
+            GoRoute(
+              path: MapScreen.route,
+              name: MapScreen.name,
+              builder: (context, state) => MapScreen(),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

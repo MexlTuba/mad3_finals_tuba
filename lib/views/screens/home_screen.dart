@@ -16,7 +16,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomBar(),
+      // bottomNavigationBar: BottomBar(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Container(
