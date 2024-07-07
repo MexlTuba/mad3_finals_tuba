@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mad3_finals_tuba/utils/constants.dart';
 import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
+import 'package:mad3_finals_tuba/views/screens/login.dart';
 import 'package:mad3_finals_tuba/views/screens/register.dart';
 import 'package:mad3_finals_tuba/views/widgets/page_indicator.dart';
 import 'package:mad3_finals_tuba/views/widgets/primary_button.dart';
@@ -65,7 +66,7 @@ class OnboardingTemplate extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    GoRouter.of(context).push(Home.path);
+                    GoRouter.of(context).push(Login.path);
                   },
                   child: Text(
                     "Log In",

@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
 import 'package:mad3_finals_tuba/utils/constants.dart';
 import 'package:mad3_finals_tuba/utils/static_data.dart';
+import 'package:mad3_finals_tuba/utils/waiting_dialog.dart';
 import 'package:mad3_finals_tuba/views/widgets/bottom_nav_bar.dart';
 import 'package:mad3_finals_tuba/views/widgets/journal_card.dart';
 import 'package:mad3_finals_tuba/views/widgets/search_input_widget.dart';
@@ -81,7 +83,10 @@ class Home extends StatelessWidget {
                             ),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          WaitingDialog.show(context,
+                              future: AuthController.I.logout(context));
+                        },
                         child: Row(
                           children: [
                             Icon(

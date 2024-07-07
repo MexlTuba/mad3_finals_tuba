@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
+import 'package:mad3_finals_tuba/utils/enum.dart';
 import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
 import 'package:mad3_finals_tuba/views/screens/login.dart';
 import 'package:mad3_finals_tuba/views/screens/onboarding.dart';
@@ -25,25 +27,21 @@ class GlobalRouter {
 
   FutureOr<String?> handleRedirect(
       BuildContext context, GoRouterState state) async {
-    // if (AuthController.I.state == AuthState.authenticated) {
-    //   if (state.matchedLocation == LoginScreen.route) {
-    //     return HomeScreen.route;
-    //   }
-    //   if (state.matchedLocation == RegistrationScreen.route) {
-    //     return HomeScreen.route;
-    //   }
-    //   return null;
-    // }
-    // if (AuthController.I.state != AuthState.authenticated) {
-    //   if (state.matchedLocation == LoginScreen.route) {
-    //     return null;
-    //   }
-    //   if (state.matchedLocation == RegistrationScreen.route) {
-    //     return null;
-    //   }
-    //   return LoginScreen.route;
-    // }
-    // return null;
+    print("handleRedirect called: Auth State = ${AuthController.I.state}");
+    if (AuthController.I.state == AuthState.authenticated) {
+      if (state.matchedLocation == Login.route ||
+          state.matchedLocation == Register.route ||
+          state.matchedLocation == Onboarding.route) {
+        return Home.route;
+      }
+      return null;
+    } else {
+      if (state.matchedLocation == Login.route ||
+          state.matchedLocation == Register.route) {
+        return null;
+      }
+      return Onboarding.route;
+    }
   }
 
   GlobalRouter() {
@@ -53,7 +51,7 @@ class GlobalRouter {
         navigatorKey: _rootNavigatorKey,
         initialLocation: Onboarding.route,
         redirect: handleRedirect,
-        // refreshListenable: AuthController.I,
+        refreshListenable: AuthController.I,
         routes: [
           GoRoute(
               parentNavigatorKey: _rootNavigatorKey,

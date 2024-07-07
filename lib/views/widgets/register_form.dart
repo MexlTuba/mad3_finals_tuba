@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
+import 'package:mad3_finals_tuba/services/information_service.dart';
 import 'package:mad3_finals_tuba/utils/constants.dart';
+import 'package:mad3_finals_tuba/utils/waiting_dialog.dart';
+import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
 import 'package:mad3_finals_tuba/views/widgets/email_input_widget.dart';
 import 'package:mad3_finals_tuba/views/widgets/password_input_widget.dart';
 // import 'package:mobile3_finalproject_locationbasedjournal_tuba/src/controllers/auth_controller.dart';
@@ -43,11 +48,19 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   void onSubmit() {
-    // if (formKey.currentState?.validate() ?? false) {
-    //   WaitingDialog.show(context,
-    //       future: AuthController.I
-    //           .register(username.text.trim(), password.text.trim()));
-    // }
+    if (formKey.currentState?.validate() ?? false) {
+      WaitingDialog.show(context,
+          future: AuthController.I
+              .register(username.text.trim(), password.text.trim())
+              .then((_) {
+            Info.showSnackbarMessage(context,
+                message: "Registration successful");
+            context.go(Home.route);
+          }).catchError((error) {
+            Info.showSnackbarMessage(context,
+                message: "Registration failed: $error");
+          }));
+    }
   }
 
   @override
@@ -67,7 +80,7 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
           SizedBox(height: 5.0),
           EmailInputWidget(
-            hintText: 'Username',
+            hintText: 'Email',
             obscureText: false,
             suffixIcon: null,
             focusNode: usernameFn,

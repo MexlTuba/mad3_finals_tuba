@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
 import 'package:mad3_finals_tuba/utils/constants.dart';
 import 'package:mad3_finals_tuba/views/screens/login.dart';
 import 'package:mad3_finals_tuba/views/widgets/register_form.dart';
@@ -132,7 +133,9 @@ class Register extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () async {
+                        await AuthController.I.signInWithGoogle(context);
+                      },
                       child: Image.asset("assets/images/google.png"),
                     ),
                     SizedBox(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "492248015244",
+    "project_id": "mad3-finals-tuba",
+    "storage_bucket": "mad3-finals-tuba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492248015244:android:651505dd4723548192b6a9",
+        "android_client_info": {
+          "package_name": "com.example.mad3_finals_tuba"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQDnSmAwBgkN42gWGj_AGd5r3O2hDzvfM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
