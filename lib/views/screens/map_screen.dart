@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mad3_finals_tuba/services/firestore_service.dart';
 
 class MapScreen extends StatefulWidget {
   static const String route = "/map";
@@ -18,15 +21,54 @@ class MapScreenState extends State<MapScreen> {
       Completer<GoogleMapController>();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    target: LatLng(10.293371, 123.861406), // Coordinates for Cebu City
+    zoom: 14.0,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  List<Marker> _markers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchJournalEntries();
+  }
+
+  Future<void> _fetchJournalEntries() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final journalEntries =
+            await FirestoreService().getJournalEntries(user.uid);
+
+        List<Marker> markers = [];
+        for (var entry in journalEntries) {
+          final location = entry['location'] as GeoPoint?;
+          if (location != null) {
+            markers.add(
+              Marker(
+                markerId: MarkerId(entry['id']),
+                position: LatLng(location.latitude, location.longitude),
+                infoWindow: InfoWindow(
+                  title: entry['title'],
+                  snippet: entry['description'],
+                ),
+              ),
+            );
+          }
+        }
+
+        setState(() {
+          _markers = markers;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load journal entries: $e'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +79,8 @@ class MapScreenState extends State<MapScreen> {
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('To the lake!'),
-        icon: const Icon(Icons.directions_boat),
+        markers: Set<Marker>.of(_markers),
       ),
     );
-  }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }

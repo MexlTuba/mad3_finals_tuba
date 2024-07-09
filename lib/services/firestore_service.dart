@@ -65,6 +65,28 @@ class FirestoreService {
         .doc(uid)
         .collection("journalEntries")
         .get();
-    return querySnapshot.docs.map((doc) => doc.data()).toList();
+
+    return querySnapshot.docs.map((doc) {
+      return {
+        ...doc.data(),
+        'id': doc.id, // Include the document ID
+      };
+    }).toList();
+  }
+
+  // Get a single journal entry
+  Future<Map<String, dynamic>> getJournalEntry(
+      String uid, String journalEntryId) async {
+    DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
+        .instance
+        .collection("users")
+        .doc(uid)
+        .collection("journalEntries")
+        .doc(journalEntryId)
+        .get();
+    if (!doc.exists) {
+      throw Exception("Journal entry $journalEntryId does not exist.");
+    }
+    return doc.data()!;
   }
 }

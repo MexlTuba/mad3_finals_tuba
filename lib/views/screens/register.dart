@@ -37,6 +37,7 @@ class Register extends StatelessWidget {
         // ),
       ),
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Builder(builder: (BuildContext context) {
           return Container(
             height:

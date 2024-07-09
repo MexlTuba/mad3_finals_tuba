@@ -37,6 +37,7 @@ class Login extends StatelessWidget {
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Builder(builder: (BuildContext context) {
           return Container(
             height:

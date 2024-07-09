@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +11,7 @@ import 'package:mad3_finals_tuba/views/screens/onboarding.dart';
 import 'package:mad3_finals_tuba/views/screens/profile_drawer.dart';
 import 'package:mad3_finals_tuba/views/screens/register.dart';
 import 'package:mad3_finals_tuba/views/screens/map_screen.dart';
+import 'package:mad3_finals_tuba/views/screens/view_journal.dart';
 import 'package:mad3_finals_tuba/views/widgets/bottom_nav_bar.dart';
 
 class GlobalRouter {
@@ -79,13 +79,22 @@ class GlobalRouter {
           name: NewJournal.name,
           builder: (context, _) => NewJournal(),
         ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: ViewJournal.route,
+          name: ViewJournal.name,
+          builder: (context, state) {
+            final journalId = state.extra as String;
+            return ViewJournal(journalId: journalId);
+          },
+        ),
         ShellRoute(
           navigatorKey: _shellNavigatorKey,
           builder: (context, state, child) {
             return Scaffold(
               body: child,
               bottomNavigationBar: BottomBar(),
-              endDrawer: ProfileDrawer(), // Add the right-side drawer
+              endDrawer: ProfileDrawer(),
             );
           },
           routes: [
