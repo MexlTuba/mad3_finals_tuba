@@ -122,11 +122,7 @@ class _JournalCardState extends State<JournalCard> {
                       children: [
                         Expanded(
                           child: Text(
-                            widget.journal['title']
-                                .split(' ')
-                                .map((word) =>
-                                    word[0].toUpperCase() + word.substring(1))
-                                .join(' '),
+                            widget.journal['title'],
                             style: TextStyle(
                               fontSize: 17.0,
                               fontWeight: FontWeight.bold,

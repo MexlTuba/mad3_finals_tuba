@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mad3_finals_tuba/services/firestore_service.dart';
+import 'package:mad3_finals_tuba/views/screens/view_journal.dart';
 
 class MapScreen extends StatefulWidget {
   static const String route = "/map";
@@ -22,7 +23,7 @@ class MapScreenState extends State<MapScreen> {
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(10.293371, 123.861406), // Coordinates for Cebu City
-    zoom: 14.0,
+    zoom: 12.0,
   );
 
   List<Marker> _markers = [];
@@ -51,6 +52,15 @@ class MapScreenState extends State<MapScreen> {
                 infoWindow: InfoWindow(
                   title: entry['title'],
                   snippet: entry['description'],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ViewJournal(journalId: entry['id']),
+                      ),
+                    );
+                  },
                 ),
               ),
             );

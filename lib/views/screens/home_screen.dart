@@ -119,7 +119,7 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                             backgroundColor: WidgetStateProperty.all(
-                              Color.fromARGB(255, 186, 180, 180),
+                              Constants.secondaryColor,
                             ),
                             padding: WidgetStateProperty.all(
                               EdgeInsets.symmetric(horizontal: 15.0),

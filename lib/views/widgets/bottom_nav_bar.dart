@@ -23,7 +23,7 @@ class _BottomBarState extends State<BottomBar> {
           GoRouter.of(context).go('/map');
           break;
         case _SelectedTab.profile:
-          Scaffold.of(context).openEndDrawer(); // Open the right-side drawer
+          Scaffold.of(context).openEndDrawer();
           break;
       }
     });
