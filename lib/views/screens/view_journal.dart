@@ -271,7 +271,10 @@ class _ViewJournalState extends State<ViewJournal> {
                         child: Container(
                           width: 250,
                           height: 250,
-                          color: Colors.grey[300],
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(22),
+                          ),
                           child: Icon(Icons.add,
                               size: 50, color: Colors.grey[700]),
                         ),
@@ -281,8 +284,11 @@ class _ViewJournalState extends State<ViewJournal> {
                         children: [
                           Container(
                             margin: EdgeInsets.only(right: 8),
-                            child: Image.network(_imageUrls[index],
-                                width: 250, height: 250, fit: BoxFit.cover),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(22.0),
+                              child: Image.network(_imageUrls[index],
+                                  width: 250, height: 250, fit: BoxFit.cover),
+                            ),
                           ),
                           if (_isEditing)
                             Positioned(

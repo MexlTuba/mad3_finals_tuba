@@ -169,7 +169,10 @@ class _NewJournalState extends State<NewJournal> {
                         child: Container(
                           width: 250,
                           height: 250,
-                          color: Colors.grey[300],
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(22.0),
+                          ),
                           child: Icon(Icons.add,
                               size: 50, color: Colors.grey[700]),
                         ),
@@ -179,11 +182,14 @@ class _NewJournalState extends State<NewJournal> {
                         children: [
                           Container(
                             margin: EdgeInsets.only(right: 8),
-                            child: Image.file(
-                              File(_images[index].path),
-                              width: 250,
-                              height: 250,
-                              fit: BoxFit.cover,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(22.0),
+                              child: Image.file(
+                                File(_images[index].path),
+                                width: 250,
+                                height: 250,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Positioned(
