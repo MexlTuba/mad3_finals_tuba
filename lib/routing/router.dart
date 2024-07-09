@@ -7,6 +7,7 @@ import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
 import 'package:mad3_finals_tuba/utils/enum.dart';
 import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
 import 'package:mad3_finals_tuba/views/screens/login.dart';
+import 'package:mad3_finals_tuba/views/screens/new_journal.dart';
 import 'package:mad3_finals_tuba/views/screens/onboarding.dart';
 import 'package:mad3_finals_tuba/views/screens/profile_drawer.dart';
 import 'package:mad3_finals_tuba/views/screens/register.dart';
@@ -71,6 +72,12 @@ class GlobalRouter {
           path: Login.route,
           name: Login.name,
           builder: (context, _) => Login(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: NewJournal.route,
+          name: NewJournal.name,
+          builder: (context, _) => NewJournal(),
         ),
         ShellRoute(
           navigatorKey: _shellNavigatorKey,

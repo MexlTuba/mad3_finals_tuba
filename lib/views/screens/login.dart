@@ -19,21 +19,22 @@ class Login extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: Color.fromRGBO(33, 45, 82, 1),
-          ),
-        ),
-        title: Text(
-          "Log in",
-          style: TextStyle(
-            color: Color.fromRGBO(33, 45, 82, 1),
-          ),
-        ),
+        // leading: GestureDetector(
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        //   child: Icon(
+        //     Icons.arrow_back_ios,
+        //     color: Color.fromRGBO(33, 45, 82, 1),
+        //   ),
+        // ),
+        // title: Text(
+        //   "Log in",
+        //   style: TextStyle(
+        //     color: Color.fromRGBO(33, 45, 82, 1),
+        //   ),
+        // ),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Builder(builder: (BuildContext context) {

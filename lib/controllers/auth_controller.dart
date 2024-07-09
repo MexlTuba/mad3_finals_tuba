@@ -11,6 +11,7 @@ import 'package:mad3_finals_tuba/services/information_service.dart';
 import 'package:mad3_finals_tuba/utils/enum.dart';
 import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
 import 'package:mad3_finals_tuba/views/screens/login.dart';
+import 'package:mad3_finals_tuba/views/screens/onboarding.dart';
 
 class AuthController with ChangeNotifier {
   // Static method to initialize the singleton in GetIt
@@ -143,7 +144,7 @@ class AuthController with ChangeNotifier {
 
       // Redirect to login or onboarding screen after logout
       if (context.mounted) {
-        context.go(Login.route); // or context.go(Onboarding.route);
+        context.go(Onboarding.route); // or context.go(Onboarding.route);
       }
     } catch (e) {
       print("Logout Error: $e");

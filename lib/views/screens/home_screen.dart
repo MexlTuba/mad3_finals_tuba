@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
 import 'package:mad3_finals_tuba/utils/constants.dart';
 import 'package:mad3_finals_tuba/utils/static_data.dart';
 import 'package:mad3_finals_tuba/utils/waiting_dialog.dart';
+import 'package:mad3_finals_tuba/views/screens/new_journal.dart';
 import 'package:mad3_finals_tuba/views/widgets/bottom_nav_bar.dart';
 import 'package:mad3_finals_tuba/views/widgets/journal_card.dart';
 import 'package:mad3_finals_tuba/views/widgets/search_input_widget.dart';
@@ -111,37 +113,34 @@ class Home extends StatelessWidget {
                 SizedBox(
                   height: 20.0,
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 52.0,
-                        decoration: BoxDecoration(
-                          color: Constants.primaryColor,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text(
-                              "New Journal",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                ElevatedButton(
+                  onPressed: () {
+                    context.push(NewJournal.route);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Constants.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                      Text(
+                        "New Journal",
+                        style: TextStyle(
+                          color: Colors.white,
                         ),
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 25.0,
