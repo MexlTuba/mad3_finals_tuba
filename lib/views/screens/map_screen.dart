@@ -1,9 +1,14 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import 'package:mad3_finals_tuba/services/firestore_service.dart';
 import 'package:mad3_finals_tuba/views/screens/view_journal.dart';
 
@@ -27,6 +32,7 @@ class MapScreenState extends State<MapScreen> {
   );
 
   List<Marker> _markers = [];
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -80,16 +86,109 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
+  Future<void> _goToCurrentLocation() async {
+    Position position = await _determinePosition();
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newLatLngZoom(
+      LatLng(position.latitude, position.longitude),
+      18.0,
+    ));
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: Set<Marker>.of(_markers),
+      appBar: AppBar(
+        title: Text('Map'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.my_location),
+            onPressed: _goToCurrentLocation,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GooglePlaceAutoCompleteTextField(
+              textEditingController: _searchController,
+              googleAPIKey: "AIzaSyCnZK-0SUxt_xnlXJXTMRqBaTb1WLjAvk4",
+              inputDecoration: InputDecoration(
+                hintText: "Search a location",
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                prefixIcon: Icon(Icons.search),
+              ),
+              debounceTime: 800,
+              countries: ["ph"], // Add your country code
+              isLatLngRequired: true,
+              getPlaceDetailWithLatLng: (Prediction prediction) async {
+                final lat = prediction.lat;
+                final lng = prediction.lng;
+                final GoogleMapController controller = await _controller.future;
+                controller.animateCamera(CameraUpdate.newLatLngZoom(
+                  LatLng(double.parse(lat!), double.parse(lng!)),
+                  18.0,
+                ));
+                setState(() {
+                  _markers.add(
+                    Marker(
+                      draggable: true,
+                      markerId: MarkerId(prediction.placeId ?? ''),
+                      position: LatLng(double.parse(lat), double.parse(lng)),
+                      infoWindow: InfoWindow(
+                        title: prediction.description,
+                      ),
+                    ),
+                  );
+                });
+              },
+              itemClick: (Prediction prediction) {
+                _searchController.text = prediction.description ?? "";
+                _searchController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: prediction.description?.length ?? 0),
+                );
+              },
+            ),
+          ),
+          Expanded(
+            child: GoogleMap(
+              mapType: MapType.hybrid,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+              markers: Set<Marker>.of(_markers),
+            ),
+          ),
+        ],
       ),
     );
   }
