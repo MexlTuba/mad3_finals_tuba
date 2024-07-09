@@ -14,6 +14,9 @@ class NewJournal extends StatefulWidget {
   static const String route = "/newjournal";
   static const String path = "/newjournal";
   static const String name = "New Journal Screen";
+  final LatLng? initialLocation;
+
+  const NewJournal({Key? key, this.initialLocation}) : super(key: key);
 
   @override
   _NewJournalState createState() => _NewJournalState();
@@ -27,6 +30,14 @@ class _NewJournalState extends State<NewJournal> {
   LatLng? _selectedLocation;
   bool _isSaving = false;
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialLocation != null) {
+      _selectedLocation = widget.initialLocation;
+    }
+  }
+
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -36,7 +47,6 @@ class _NewJournalState extends State<NewJournal> {
     }
   }
 
-  // Function to choose location
   Future<void> _chooseLocation(BuildContext context) async {
     final location = await Navigator.push(
       context,
@@ -49,7 +59,6 @@ class _NewJournalState extends State<NewJournal> {
     }
   }
 
-  // Function to upload images to Firebase Storage
   Future<List<String>> _uploadImages() async {
     List<String> imageUrls = [];
     for (var image in _images) {
@@ -62,7 +71,6 @@ class _NewJournalState extends State<NewJournal> {
     return imageUrls;
   }
 
-  // Function to save journal entry to Firestore
   Future<void> _saveJournal() async {
     if (_titleController.text.isEmpty ||
         _descriptionController.text.isEmpty ||
@@ -124,7 +132,6 @@ class _NewJournalState extends State<NewJournal> {
     }
   }
 
-  // Function to delete an image from the list
   void _deleteImage(int index) {
     setState(() {
       _images.removeAt(index);
@@ -223,10 +230,11 @@ class _NewJournalState extends State<NewJournal> {
               ElevatedButton(
                 onPressed: () => _chooseLocation(context),
                 child: Text(
-                    _selectedLocation == null
-                        ? 'Choose Location'
-                        : 'Change Location',
-                    style: TextStyle(color: Colors.white)),
+                  _selectedLocation == null
+                      ? 'Choose Location'
+                      : 'Change Location',
+                  style: TextStyle(color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Constants.primaryColor,
                   shape: RoundedRectangleBorder(

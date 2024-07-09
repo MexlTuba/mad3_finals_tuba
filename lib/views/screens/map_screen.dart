@@ -1,7 +1,4 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:mad3_finals_tuba/services/firestore_service.dart';
 import 'package:mad3_finals_tuba/views/screens/view_journal.dart';
+import 'package:mad3_finals_tuba/views/screens/new_journal.dart';
 
 class MapScreen extends StatefulWidget {
   static const String route = "/map";
@@ -89,10 +87,12 @@ class MapScreenState extends State<MapScreen> {
   Future<void> _goToCurrentLocation() async {
     Position position = await _determinePosition();
     final GoogleMapController controller = await _controller.future;
+    LatLng currentLatLng = LatLng(position.latitude, position.longitude);
     controller.animateCamera(CameraUpdate.newLatLngZoom(
-      LatLng(position.latitude, position.longitude),
+      currentLatLng,
       18.0,
     ));
+    _addMarker(currentLatLng, "Current Location");
   }
 
   Future<Position> _determinePosition() async {
@@ -119,6 +119,32 @@ class MapScreenState extends State<MapScreen> {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  void _addMarker(LatLng position, String title) {
+    setState(() {
+      _markers.add(
+        Marker(
+          draggable: true,
+          markerId: MarkerId(position.toString()),
+          position: position,
+          infoWindow: InfoWindow(
+            title: title,
+            snippet: "Tap to Add Journal Entry",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NewJournal(
+                    initialLocation: position,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -150,25 +176,15 @@ class MapScreenState extends State<MapScreen> {
               countries: ["ph"], // Add your country code
               isLatLngRequired: true,
               getPlaceDetailWithLatLng: (Prediction prediction) async {
-                final lat = prediction.lat;
-                final lng = prediction.lng;
+                final lat = double.parse(prediction.lat!);
+                final lng = double.parse(prediction.lng!);
                 final GoogleMapController controller = await _controller.future;
+                LatLng position = LatLng(lat, lng);
                 controller.animateCamera(CameraUpdate.newLatLngZoom(
-                  LatLng(double.parse(lat!), double.parse(lng!)),
+                  position,
                   18.0,
                 ));
-                setState(() {
-                  _markers.add(
-                    Marker(
-                      draggable: true,
-                      markerId: MarkerId(prediction.placeId ?? ''),
-                      position: LatLng(double.parse(lat), double.parse(lng)),
-                      infoWindow: InfoWindow(
-                        title: prediction.description,
-                      ),
-                    ),
-                  );
-                });
+                _addMarker(position, prediction.description!);
               },
               itemClick: (Prediction prediction) {
                 _searchController.text = prediction.description ?? "";
@@ -186,6 +202,9 @@ class MapScreenState extends State<MapScreen> {
                 _controller.complete(controller);
               },
               markers: Set<Marker>.of(_markers),
+              onTap: (LatLng position) {
+                _addMarker(position, "New Marker");
+              },
             ),
           ),
         ],
