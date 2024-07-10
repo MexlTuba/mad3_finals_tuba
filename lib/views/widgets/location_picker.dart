@@ -200,8 +200,8 @@ class _LocationPickerState extends State<LocationPicker> {
               ),
             ),
             Positioned(
-              bottom: 20,
-              right: 60,
+              bottom: 100,
+              right: 10,
               child: FloatingActionButton(
                 onPressed: _goToCurrentLocation,
                 child: Icon(
