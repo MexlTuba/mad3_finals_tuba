@@ -138,17 +138,17 @@ class _JournalCardState extends State<JournalCard> {
                                 color: Constants.secondaryColor,
                               ),
                               SizedBox(height: 5.0),
-                              Text(
-                                'Location: ',
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Color(0xFF343434),
-                                ),
-                              ),
+                              // Text(
+                              //   'Location: ',
+                              //   style: TextStyle(
+                              //     fontSize: 13.0,
+                              //     color: Color(0xFF343434),
+                              //   ),
+                              // ),
                               Expanded(
                                 child: Text(
-                                  widget.journal['location'] != null
-                                      ? '(${widget.journal['location'].latitude}, ${widget.journal['location'].longitude})'
+                                  widget.journal['landmark'] != null
+                                      ? '(${widget.journal['landmark']}})'
                                       : '',
                                   style: TextStyle(
                                     fontSize: 15.0,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geocoding/geocoding.dart';
 
 class FirestoreService {
   static Future<void> storeUser(String email, String uid,
@@ -23,12 +24,16 @@ class FirestoreService {
   // Add journal entry
   Future<void> addJournalEntry(
       String uid, Map<String, dynamic> journalData) async {
+    // Reverse geocode the location to get the landmark
+    String? landmark = await _getLandmark(journalData['location']);
+
     await FirebaseFirestore.instance
         .collection("users")
         .doc(uid)
         .collection("journalEntries")
         .add({
       ...journalData,
+      "landmark": landmark,
       "created_at": FieldValue.serverTimestamp(),
       "updated_at": FieldValue.serverTimestamp(),
     });
@@ -37,6 +42,9 @@ class FirestoreService {
   // Update journal entry
   Future<void> updateJournalEntry(String uid, String journalEntryId,
       Map<String, dynamic> journalData) async {
+    // Reverse geocode the location to get the landmark
+    String? landmark = await _getLandmark(journalData['location']);
+
     await FirebaseFirestore.instance
         .collection("users")
         .doc(uid)
@@ -44,6 +52,7 @@ class FirestoreService {
         .doc(journalEntryId)
         .update({
       ...journalData,
+      "landmark": landmark,
       "updated_at": FieldValue.serverTimestamp(),
     });
   }
@@ -115,5 +124,20 @@ class FirestoreService {
       throw Exception("Journal entry $journalEntryId does not exist.");
     }
     return doc.data()!;
+  }
+
+  // Private method to get landmark from coordinates
+  Future<String?> _getLandmark(GeoPoint location) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(location.latitude, location.longitude);
+      if (placemarks.isNotEmpty) {
+        final Placemark place = placemarks.first;
+        return "${place.name}, ${place.locality}, ${place.country}";
+      }
+    } catch (e) {
+      print("Failed to get landmark: $e");
+    }
+    return null;
   }
 }
