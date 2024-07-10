@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
 import 'package:mad3_finals_tuba/services/firestore_service.dart';
@@ -20,43 +21,30 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Map<String, dynamic>> _journals = [];
-  bool _loading = true;
+  Stream<List<Map<String, dynamic>>>? _journalStream;
 
   @override
   void initState() {
     super.initState();
-    _fetchJournals();
+    _journalStream = _fetchJournals();
   }
 
-  Future<void> _fetchJournals() async {
-    setState(() {
-      _loading = true;
-    });
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final journalEntries =
-            await FirestoreService().getJournalEntries(user.uid);
-        setState(() {
-          _journals = journalEntries;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _loading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load journals: $e'),
-        ),
-      );
+  Stream<List<Map<String, dynamic>>> _fetchJournals() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('journalEntries')
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => {
+                    ...doc.data(),
+                    'id': doc.id,
+                  })
+              .toList());
     }
-  }
-
-  Future<void> _refreshJournals() async {
-    await _fetchJournals();
+    return Stream.value([]);
   }
 
   @override
@@ -64,7 +52,10 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: RefreshIndicator(
         color: Constants.primaryColor,
-        onRefresh: _refreshJournals,
+        onRefresh: () async {
+          // Manually trigger a refresh
+          setState(() {});
+        },
         child: SingleChildScrollView(
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -113,19 +104,21 @@ class _HomeState extends State<Home> {
                         height: 48.0,
                         child: TextButton(
                           style: ButtonStyle(
-                            shape: WidgetStateProperty.all(
+                            shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
-                            backgroundColor: WidgetStateProperty.all(
+                            backgroundColor: MaterialStateProperty.all(
                               Constants.secondaryColor,
                             ),
-                            padding: WidgetStateProperty.all(
+                            padding: MaterialStateProperty.all(
                               EdgeInsets.symmetric(horizontal: 15.0),
                             ),
                           ),
-                          onPressed: _refreshJournals,
+                          onPressed: () {
+                            setState(() {}); // Manually trigger a refresh
+                          },
                           child: Row(
                             children: [
                               Icon(Icons.refresh, color: Colors.white),
@@ -178,31 +171,39 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                   SizedBox(height: 25.0),
-                  if (_loading)
-                    Center(
-                        child: CircularProgressIndicator(
-                      color: Constants.primaryColor,
-                    ))
-                  else if (_journals.isEmpty)
-                    Center(child: Text("No journals found."))
-                  else
-                    ListView.separated(
-                      separatorBuilder: (BuildContext context, int index) {
-                        return SizedBox(height: 15.0);
-                      },
-                      itemCount: _journals.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        final journal = _journals[index];
-                        final journalId =
-                            journal['id'] ?? ''; // Ensure a valid default value
-                        return JournalCard(
-                          journal: journal,
-                          journalId: journalId,
+                  StreamBuilder<List<Map<String, dynamic>>>(
+                    stream: _journalStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                            child: CircularProgressIndicator(
+                          color: Constants.primaryColor,
+                        ));
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text("No journals found."));
+                      } else {
+                        final journals = snapshot.data!;
+                        return ListView.separated(
+                          separatorBuilder: (BuildContext context, int index) {
+                            return SizedBox(height: 15.0);
+                          },
+                          itemCount: journals.length,
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            final journal = journals[index];
+                            final journalId = journal['id'] ?? '';
+                            return JournalCard(
+                              journal: journal,
+                              journalId: journalId,
+                            );
+                          },
                         );
-                      },
-                    ),
+                      }
+                    },
+                  ),
                 ],
               ),
             ),

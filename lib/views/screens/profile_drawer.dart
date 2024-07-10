@@ -1,11 +1,42 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mad3_finals_tuba/controllers/auth_controller.dart';
+import 'package:mad3_finals_tuba/services/firestore_service.dart';
 import 'package:mad3_finals_tuba/utils/constants.dart';
 import 'package:mad3_finals_tuba/utils/waiting_dialog.dart';
 import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
 
-class ProfileDrawer extends StatelessWidget {
+class ProfileDrawer extends StatefulWidget {
+  @override
+  State<ProfileDrawer> createState() => _ProfileDrawerState();
+}
+
+class _ProfileDrawerState extends State<ProfileDrawer> {
+  String userEmail = 'Loading...';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserEmail();
+  }
+
+  Future<void> _fetchUserEmail() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final userData = await FirestoreService.getUser(user.uid);
+        if (userData != null) {
+          setState(() {
+            userEmail = userData['email'] ?? 'No email';
+          });
+        }
+      } catch (e) {
+        print("Error fetching user data: $e");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -24,17 +55,20 @@ class ProfileDrawer extends StatelessWidget {
               ),
             ),
             accountEmail: Text(
-              'user@example.com',
+              userEmail,
               style: TextStyle(
                 color: Colors.white70,
               ),
             ),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                size: 42.0,
-                color: Constants.primaryColor,
+            currentAccountPicture: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.person,
+                  size: 42.0,
+                  color: Constants.primaryColor,
+                ),
               ),
             ),
           ),

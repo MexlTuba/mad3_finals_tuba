@@ -109,18 +109,20 @@ class MapScreenState extends State<MapScreen> {
     final Canvas canvas = Canvas(pictureRecorder);
     final double size = 200.0;
 
-    final Paint paint = Paint();
-    final RRect rrect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size, size),
-      Radius.circular(size / 2),
-    );
+    // Draw the circle with black border
+    final Paint paintCircle = Paint()..color = Colors.black;
+    canvas.drawCircle(Offset(size / 2, size / 2), size / 2, paintCircle);
 
-    canvas.drawRRect(rrect, paint);
+    // Draw the image inside the circle
+    final Rect rect = Rect.fromCircle(
+        center: Offset(size / 2, size / 2), radius: (size / 2) - 4);
+    final RRect rrect =
+        RRect.fromRectAndRadius(rect, Radius.circular(size / 2 - 4));
+    canvas.clipRRect(rrect);
     paintImage(
       canvas: canvas,
       image: fi.image,
-      rect:
-          Rect.fromCircle(center: Offset(size / 2, size / 2), radius: size / 2),
+      rect: rect,
       fit: BoxFit.cover,
     );
 
@@ -218,19 +220,31 @@ class MapScreenState extends State<MapScreen> {
               top: 50,
               left: 10,
               right: 10,
-              child: Card(
-                elevation: 5,
-                child: GooglePlaceAutoCompleteTextField(
+              child: GooglePlaceAutoCompleteTextField(
+                  boxDecoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(88.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
                   textEditingController: _searchController,
                   googleAPIKey: "AIzaSyCnZK-0SUxt_xnlXJXTMRqBaTb1WLjAvk4",
                   inputDecoration: InputDecoration(
                     hintText: "Search a location",
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.all(12),
                     prefixIcon: Icon(Icons.search),
                   ),
                   debounceTime: 800,
-                  countries: ["ph"], // Add your country code
+                  countries: ["ph"],
                   isLatLngRequired: true,
                   getPlaceDetailWithLatLng: (Prediction prediction) async {
                     final lat = double.parse(prediction.lat!);
@@ -250,8 +264,7 @@ class MapScreenState extends State<MapScreen> {
                       TextPosition(offset: prediction.description?.length ?? 0),
                     );
                   },
-                ),
-              ),
+                  cursorColor: Colors.blue),
             ),
             Positioned(
               bottom: 20,

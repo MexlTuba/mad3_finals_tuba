@@ -34,6 +34,7 @@ class _BottomBarState extends State<BottomBar> {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: SalomonBottomBar(
+        // unselectedItemColor: ,
         currentIndex: _SelectedTab.values.indexOf(_selectedTab),
         onTap: _handleIndexChanged,
         items: [

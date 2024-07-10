@@ -9,6 +9,7 @@ import 'package:mad3_finals_tuba/routing/router.dart';
 import 'package:mad3_finals_tuba/services/firestore_service.dart';
 import 'package:mad3_finals_tuba/services/information_service.dart';
 import 'package:mad3_finals_tuba/utils/enum.dart';
+import 'package:mad3_finals_tuba/utils/waiting_dialog.dart';
 import 'package:mad3_finals_tuba/views/screens/home_screen.dart';
 import 'package:mad3_finals_tuba/views/screens/login.dart';
 import 'package:mad3_finals_tuba/views/screens/onboarding.dart';
@@ -58,18 +59,22 @@ class AuthController with ChangeNotifier {
 
   Future<void> login(String userName, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: userName, password: password);
-      handleUserChanges(userCredential.user);
-      Info.showSnackbarMessage(
-          GetIt.instance<GlobalRouter>()
-              .router
-              .routerDelegate
-              .navigatorKey
-              .currentContext!,
-          message: "Login successful");
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        // Show the WaitingDialog before starting the login process
+        final context = GetIt.instance<GlobalRouter>()
+            .router
+            .routerDelegate
+            .navigatorKey
+            .currentContext!;
+        await WaitingDialog.show(context, future: Future(() async {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: userName, password: password);
+          handleUserChanges(userCredential.user);
+          // Info.showSnackbarMessage(context, message: "Login successful");
+        }));
+      });
     } catch (e) {
-      print("Login Error: $e");
+      debugPrint("Login Error: $e");
       Info.showSnackbarMessage(
           GetIt.instance<GlobalRouter>()
               .router

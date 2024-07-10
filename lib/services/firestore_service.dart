@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class FirestoreService {
   static Future<void> storeUser(String email, String uid,
@@ -49,12 +50,38 @@ class FirestoreService {
 
   // Delete journal entry
   Future<void> deleteJournalEntry(String uid, String journalEntryId) async {
-    await FirebaseFirestore.instance
+    final docRef = FirebaseFirestore.instance
         .collection("users")
         .doc(uid)
         .collection("journalEntries")
-        .doc(journalEntryId)
-        .delete();
+        .doc(journalEntryId);
+
+    final doc = await docRef.get();
+    if (!doc.exists) {
+      throw Exception("Journal entry $journalEntryId does not exist.");
+    }
+
+    final journalData = doc.data();
+    if (journalData == null) {
+      throw Exception("No data found for journal entry $journalEntryId.");
+    }
+
+    // Get the list of image URLs from the journal entry
+    final List<dynamic> imageUrls = journalData['images'] ?? [];
+
+    // Delete each image from Firebase Storage
+    for (final imageUrl in imageUrls) {
+      try {
+        final ref = FirebaseStorage.instance.refFromURL(imageUrl);
+        await ref.delete();
+      } catch (e) {
+        // Handle any errors during deletion
+        print("Failed to delete image $imageUrl: $e");
+      }
+    }
+
+    // Delete the journal entry document from Firestore
+    await docRef.delete();
   }
 
   // Get all journal entries for a user

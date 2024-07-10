@@ -258,6 +258,7 @@ class _NewJournalState extends State<NewJournal> {
                 SizedBox(
                   height: 200,
                   child: GoogleMap(
+                    mapType: MapType.hybrid,
                     initialCameraPosition: CameraPosition(
                       target: _selectedLocation!,
                       zoom: 15,
