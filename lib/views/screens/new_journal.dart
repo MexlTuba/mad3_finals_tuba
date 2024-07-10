@@ -138,6 +138,38 @@ class _NewJournalState extends State<NewJournal> {
     });
   }
 
+  InputDecoration _buildInputDecoration(String labelText) {
+    return InputDecoration(
+      labelText: labelText,
+      border: OutlineInputBorder(),
+      filled: true,
+      fillColor: Colors.white,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4.0),
+        borderSide: BorderSide(color: Colors.grey),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4.0),
+        borderSide: BorderSide(color: Constants.primaryColor),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4.0),
+        borderSide: BorderSide(color: Colors.grey),
+      ),
+      labelStyle: TextStyle(
+        color: Colors.grey[700],
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  TextStyle _buildTextStyle() {
+    return TextStyle(
+      color: Colors.black,
+      fontSize: 16.0,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -218,19 +250,15 @@ class _NewJournalState extends State<NewJournal> {
               SizedBox(height: 16),
               TextField(
                 controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'Journal Title',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: _buildInputDecoration('Journal Title'),
+                style: _buildTextStyle(),
               ),
               SizedBox(height: 16),
               TextField(
                 controller: _descriptionController,
                 maxLines: 4,
-                decoration: InputDecoration(
-                  labelText: 'Journal Description',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: _buildInputDecoration('Journal Description'),
+                style: _buildTextStyle(),
               ),
               SizedBox(height: 16),
               ElevatedButton(
@@ -284,7 +312,7 @@ class _NewJournalState extends State<NewJournal> {
                         style: TextStyle(color: Colors.white),
                       ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Constants.highlightColor2,
+                  backgroundColor: Constants.secondaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),

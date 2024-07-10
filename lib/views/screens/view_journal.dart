@@ -245,10 +245,28 @@ class _ViewJournalState extends State<ViewJournal> {
         ),
         actions: [
           if (_isEditing)
-            IconButton(
-              padding: EdgeInsets.only(right: 16),
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: _deleteJournal,
+            Row(
+              children: [
+                IconButton(
+                  padding: EdgeInsets.only(right: 16),
+                  icon: Icon(Icons.delete, color: Constants.primaryColor),
+                  onPressed: _deleteJournal,
+                ),
+                if (!_isSaving)
+                  IconButton(
+                    padding: EdgeInsets.only(right: 16),
+                    icon: Icon(Icons.save, color: Constants.secondaryColor),
+                    onPressed: _saveJournal,
+                  ),
+                if (_isSaving)
+                  Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Constants.primaryColor),
+                    ),
+                  ),
+              ],
             ),
         ],
       ),
@@ -402,25 +420,6 @@ class _ViewJournalState extends State<ViewJournal> {
                   ),
                 ),
               ],
-              SizedBox(height: 16),
-              if (_isEditing)
-                ElevatedButton(
-                  onPressed: _isSaving ? null : _saveJournal,
-                  child: _isSaving
-                      ? CircularProgressIndicator(
-                          color: Constants.primaryColor,
-                        )
-                      : Text(
-                          'Save Journal',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Constants.highlightColor2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
