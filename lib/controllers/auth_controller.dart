@@ -147,9 +147,9 @@ class AuthController with ChangeNotifier {
       Info.showSnackbarMessage(context,
           message: "You have successfully logged out.");
 
-      // Redirect to login or onboarding screen after logout
+      // Redirect to Onboarding screen after logout
       if (context.mounted) {
-        context.go(Onboarding.route); // or context.go(Onboarding.route);
+        context.go(Onboarding.route);
       }
     } catch (e) {
       print("Logout Error: $e");

@@ -134,7 +134,9 @@ class _HomeState extends State<Home> {
                   SizedBox(height: 20.0),
                   ElevatedButton(
                     onPressed: () {
-                      context.push(NewJournal.route);
+                      if (mounted) {
+                        context.push(NewJournal.route);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Constants.primaryColor,

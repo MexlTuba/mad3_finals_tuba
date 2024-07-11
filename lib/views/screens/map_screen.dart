@@ -58,37 +58,43 @@ class MapScreenState extends State<MapScreen> {
                 entry['images']?.isNotEmpty == true ? entry['images'][0] : null;
             final markerIcon = await _createCustomMarkerBitmap(imageUrl);
 
-            setState(() {
-              _markers.add(
-                Marker(
-                  markerId: MarkerId(entry['id']),
-                  position: LatLng(location.latitude, location.longitude),
-                  icon: markerIcon,
-                  infoWindow: InfoWindow(
-                    title: entry['title'],
-                    snippet: entry['description'],
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ViewJournal(journalId: entry['id']),
-                        ),
-                      );
-                    },
+            if (mounted) {
+              setState(() {
+                _markers.add(
+                  Marker(
+                    markerId: MarkerId(entry['id']),
+                    position: LatLng(location.latitude, location.longitude),
+                    icon: markerIcon,
+                    infoWindow: InfoWindow(
+                      title: entry['title'],
+                      snippet: entry['description'],
+                      onTap: () {
+                        if (mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ViewJournal(journalId: entry['id']),
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ),
-                ),
-              );
-            });
+                );
+              });
+            }
           }
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load journal entries: $e'),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load journal entries: $e'),
+          ),
+        );
+      }
     }
   }
 
@@ -174,29 +180,33 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void _addMarker(LatLng position, String title) {
-    setState(() {
-      _markers.add(
-        Marker(
-          draggable: true,
-          markerId: MarkerId(position.toString()),
-          position: position,
-          infoWindow: InfoWindow(
-            title: title,
-            snippet: "Tap to Add Journal Entry",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NewJournal(
-                    initialLocation: position,
-                  ),
-                ),
-              );
-            },
+    if (mounted) {
+      setState(() {
+        _markers.add(
+          Marker(
+            draggable: true,
+            markerId: MarkerId(position.toString()),
+            position: position,
+            infoWindow: InfoWindow(
+              title: title,
+              snippet: "Tap to Add Journal Entry",
+              onTap: () {
+                if (mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewJournal(
+                        initialLocation: position,
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
           ),
-        ),
-      );
-    });
+        );
+      });
+    }
   }
 
   @override

@@ -26,6 +26,7 @@ dependencies:
   google_sign_in: ^6.2.1
   http: ^1.2.1
   image_picker: ^1.1.2
+  pretty_textfield: ^0.0.1
   salomon_bottom_bar: ^3.3.2
 
 dev_dependencies:

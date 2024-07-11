@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mad3_finals_tuba/views/widgets/onboarding_template.dart';
 
@@ -12,6 +13,7 @@ class Onboarding extends StatefulWidget {
 class _OnboardingState extends State<Onboarding> {
   PageController _imagePageController = PageController();
   int currentPage = 0;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -20,7 +22,27 @@ class _OnboardingState extends State<Onboarding> {
         currentPage = _imagePageController.page!.round();
       });
     });
+
+    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      if (currentPage < 2) {
+        currentPage++;
+      } else {
+        currentPage = 0;
+      }
+      _imagePageController.animateToPage(
+        currentPage,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -31,6 +53,7 @@ class _OnboardingState extends State<Onboarding> {
           Expanded(
             flex: 2,
             child: PageView(
+              physics: BouncingScrollPhysics(),
               controller: _imagePageController,
               children: [
                 Image.asset("assets/images/page1.png", fit: BoxFit.cover),
